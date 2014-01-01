@@ -1,19 +1,23 @@
 {
-    "name": "woe",
-    "description": "Web-based PIM app using Emacs and Orgmode",
-    "license": "BSD", 
-    "author": "drivet",
-    "version": "0.0.0",
-    "main": "index.js",
-    "repository":{
-        "type": "git", 
-        "url": "git@github.com:drivet\/woe.git"
-    },
-    "keywords": ["pim", "emacs orgmode"], 
-    "dependencies": {
-        "express": "3.0.0"
-    }, 
-    "scripts":{
-        "test": "jasmine-node spec"
-    }
+  "name": "woe",
+  "description": "Web-based PIM app using Emacs and Orgmode",
+  "license": "BSD",
+  "author": "drivet",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:drivet/woe.git"
+  },
+  "keywords": [
+    "pim",
+    "emacs orgmode"
+  ],
+  "dependencies": {
+    "express": "3.0.0",
+    "jade": "~1.0.1"
+  },
+  "scripts": {
+    "test": "jasmine-node spec"
+  }
 }

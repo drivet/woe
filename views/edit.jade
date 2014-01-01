@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h1= title
+  div
+      form(action=path_to_edit, method='post')
+          input(type="hidden" name="_method" value="put")
+          textarea(name="data" rows="30", cols="100")= data
+          div: input(type="Submit")
