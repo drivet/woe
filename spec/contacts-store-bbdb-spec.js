@@ -40,11 +40,18 @@ describe("ContactsStore", function() {
     });
 
     it("should generate a correct bbdb creation form", function() {
-        var expectedForm = "(bbdb-create-internal '(\"Ricky\" . \"Ricardo\") nil nil '(\"org1\" \"org2\") "+
-                "'(\"a@b.org\" \"b@h.org\") '([\"Home\" \"6666666666\"] [\"Cell\" \"7777777777\"]) "+
-                "'([\"Home\" (\"543 Blah de Blah\") \"Montreal\" \"Quebec\" \"H4C2L2\" \"Canada\"] "+
-                "[\"Business\" (\"777 Foo de Foo\" \"Suite 529\") \"Toronto\" \"Ontario\" \"J4K2T3\" \"Canada\"]) nil)";
-        expect(storemod.makeBbdbCreateForm(contact)).toEqual(expectedForm);
+        var expectedForm =  [{name: 'bbdb-create-internal'},
+                             [{name: 'quote'}, {car: "Ricky", cdr: "Ricardo"}], [], [],
+                             [{name: 'quote'}, ["org1", "org2"]],
+                             [{name: 'quote'}, ["a@b.org", "b@h.org"]],
+                             [{name: 'list'}, [{name: 'vector'}, "Home", "6666666666"],
+                                              [{name: 'vector'}, "Cell", "7777777777"]],
+                             [{name: 'list'}, [{name: 'vector'}, "Home", [{name: 'quote'},["543 Blah de Blah"]],
+                                               "Montreal", "Quebec", "H4C2L2", "Canada"],
+                                              [{name: 'vector'}, "Business", [{name: 'quote'},["777 Foo de Foo", "Suite 529"]],
+                                               "Toronto", "Ontario", "J4K2T3", "Canada"]],
+                             []];
+        expect(storemod.bbdbCreate(contact)).toEqual(expectedForm);
     });
     
     it('should create a new contact', function(){
@@ -65,4 +72,9 @@ describe("ContactsStore", function() {
             expect(fs.readFileSync(bbdbFile).toString()).toContain(contact.firstName);
         });
     });
+
+    it('should fetch existing contacts', function(){
+        
+    });
+    
 });

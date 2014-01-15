@@ -7,3 +7,11 @@
 (require 'bbdb)
 (require 'bbdb-com)
 (bbdb-initialize 'gnus 'message)
+
+(defun dump-buffer (buffer-name)
+  "Dump contents of buffer to standard out in batch mode"
+  (let ((buf (get-buffer buffer-name)))
+    (if buf
+        (save-current-buffer
+          (set-buffer buf)
+          (print (buffer-string))))))

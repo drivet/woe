@@ -1,70 +1,45 @@
-var spawn = require('child_process').spawn;
-var exec = require('child_process').exec;
+var EmacsBatcher = require('./emacs-batcher');
 
-var startSexp = function(quote){
-    var sexp = "";
-    if (quote){
-        sexp += "'";
-    }
-    sexp += "(";
-    return sexp;
+var phoneVector = function(telephone){
+    return [{name: 'vector'}, telephone.label, telephone.number];
 };
 
-var makeSexp = function(list, quote){
-    return startSexp(quote) + list.join(" ") + ")";
+var addressVector = function(address){
+    return [{name: 'vector'},
+            address.label,
+            [{name: 'quote'},address.address],
+            address.city,
+            address.state,
+            address.postalCode,
+            address.country];
 };
 
-var makeDottedPair = function(first, second, quote){
-    return startSexp(quote) + first + " . " + second + ")";
+var bbdbCreate = function(contact){
+    var bbdbsexp = [{name: 'bbdb-create-internal'},
+                    [{name: 'quote'}, {car: contact.firstName, cdr: contact.lastName}], [], [],
+                    [{name: 'quote'}, contact.organization],
+                    [{name: 'quote'}, contact.email],
+                    [{name: 'list'}].concat(contact.telephone.map(phoneVector)),
+                    [{name: 'list'}].concat(contact.address.map(addressVector)),
+                    []
+                   ];
+    return bbdbsexp;
 };
 
-var quote = function(str){
-    return "\"" + str + "\"";
+var setq = function(name, value){
+    return [{name: 'setq'}, {name: name}, value];
 };
 
-var makeVector = function(list){
-    return "[" + list.join(" ") + "]";
-};
-
-var makePhoneVector = function(telephone){
-    return makeVector([telephone.label, telephone.number].map(quote));
-};
-
-var makeAddressVector = function(address){
-    var addressList = [];
-    addressList.push(quote(address.label));
-    addressList.push(makeSexp(address.address.map(quote)));
-    addressList.push(quote(address.city));
-    addressList.push(quote(address.state));
-    addressList.push(quote(address.postalCode));
-    addressList.push(quote(address.country));
-    return makeVector(addressList);
-};
-
-var makeBbdbCreateForm = function(contact){
-    var sexp = makeSexp(["bbdb-create-internal",
-                         makeDottedPair(quote(contact.firstName),
-                                        quote(contact.lastName),
-                                        true),
-                         "nil", "nil",
-                         makeSexp(contact.organization.map(quote), true),
-                         makeSexp(contact.email.map(quote), true),
-                         makeSexp(contact.telephone.map(makePhoneVector), true),
-                         makeSexp(contact.address.map(makeAddressVector), true),
-                         "nil"
-                        ], false);
-    return sexp;
-};
-
-
-ContactsStore = function(emacsCmd, bbdbFile, bbdbInitFile){
-    this.emacsCmd = emacsCmd;
+ContactsStore = function(emacsCmd, bbdbFile, initFile){
     this.bbdbFile = bbdbFile;
-    this.bbdbInitFile = bbdbInitFile;
+    this.emacsBatcher = new EmacsBatcher(emacsCmd, initFile);
 };
 
-ContactsStore.prototype.fetch = function(){
-    
+ContactsStore.prototype.fetchMatching = function(text, callback){
+    var setqBbdbFileForm = setq("bbdb-file", this.bbdbFile);
+    var bbdbSearch = [{name: "bbdb"}, text];
+    var dumpBbdb = [{name: 'dump-buffer'}, "*BBDB*"];
+    this.emacsBatcher.run([setqBbdbFileForm, bbdbSearch, dumpBbdb], callback);
 };
 
 ContactsStore.prototype.update = function(contact){
@@ -72,16 +47,11 @@ ContactsStore.prototype.update = function(contact){
 };
 
 ContactsStore.prototype.create = function(contact, callback){
-    var bbdbCreateForm = makeBbdbCreateForm(contact);
-    var setqBbdbFile = "(setq bbdb-file \""+this.bbdbFile+"\")";
-
-    var emacsArgs =  [this.emacsCmd, "-batch", "-l", this.bbdbInitFile,
-                      "--eval="+JSON.stringify(setqBbdbFile),
-                      "--eval="+JSON.stringify(bbdbCreateForm),
-                      "--eval=\"(save-some-buffers t)\""];
-    var emacsCmd = emacsArgs.join(" ");
-    exec(emacsCmd, callback);
+    var setqBbdbFileForm = setq("bbdb-file", this.bbdbFile);
+    var bbdbCreateForm = bbdbCreate(contact);
+    var saveBuffersForm = [{name: 'save-some-buffers'}, {name: 't'}];
+    this.emacsBatcher.run([setqBbdbFileForm, bbdbCreateForm, saveBuffersForm ], callback);
 };
 
 exports.ContactsStore = ContactsStore;
-exports.makeBbdbCreateForm = makeBbdbCreateForm;
+exports.bbdbCreate = bbdbCreate;
