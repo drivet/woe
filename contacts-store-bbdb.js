@@ -37,20 +37,27 @@ ContactsStore = function(emacsCmd, bbdbFile, initFile){
 
 ContactsStore.prototype.fetchMatching = function(text, callback){
     var setqBbdbFileForm = setq("bbdb-file", this.bbdbFile);
-    var bbdbSearch = [{name: "bbdb"}, text];
-    var dumpBbdb = [{name: 'dump-buffer'}, "*BBDB*"];
-    this.emacsBatcher.run([setqBbdbFileForm, bbdbSearch, dumpBbdb], callback);
-};
-
-ContactsStore.prototype.update = function(contact){
-   
+    var bbdbSearch = [{name: "fetch-contacts-json-batch"}, text];
+    this.emacsBatcher.run([setqBbdbFileForm, bbdbSearch], function(err,stdout,stderr){
+        if (err){
+            callback(err);
+        } else {
+            callback(undefined, JSON.parse(stdout));
+        }
+    });
 };
 
 ContactsStore.prototype.create = function(contact, callback){
     var setqBbdbFileForm = setq("bbdb-file", this.bbdbFile);
     var bbdbCreateForm = bbdbCreate(contact);
     var saveBuffersForm = [{name: 'save-some-buffers'}, {name: 't'}];
-    this.emacsBatcher.run([setqBbdbFileForm, bbdbCreateForm, saveBuffersForm ], callback);
+    this.emacsBatcher.run([setqBbdbFileForm, bbdbCreateForm, saveBuffersForm], function(err,stdout,stderr){
+        if (err) {
+            callback(err);
+        } else {
+            callback(undefined);
+        }
+    });
 };
 
 exports.ContactsStore = ContactsStore;
