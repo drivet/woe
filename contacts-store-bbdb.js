@@ -60,5 +60,17 @@ ContactsStore.prototype.create = function(contact, callback){
     });
 };
 
+ContactsStore.prototype.delete = function(firstName, lastName, hash, callback){
+    var setqBbdbFileForm = setq("bbdb-file", this.bbdbFile);
+    var bbdbDelete = [{name: "woe-delete-record"}, firstName, lastName, hash];
+    this.emacsBatcher.run([setqBbdbFileForm, bbdbDelete], function(err,stdout,stderr){
+        if (err){
+            callback(err);
+        } else {
+            callback(undefined);
+        }
+    });
+};
+
 exports.ContactsStore = ContactsStore;
 exports.bbdbCreate = bbdbCreate;

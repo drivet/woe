@@ -1,0 +1,4 @@
+;; -*-coding: utf-8-emacs;-*-
+;;; file-format: 7
+["Ricky" "Ricardo" nil nil ("Acme Corp" "Umbrella Corp") (["Cell" 555 555 5555 0] ["Work" 666 666 6666 0] ["Fax" 444 444 4444 0]) (["Work" ("65 Funny Road") "Metropolis" "Kansas" "90210" "Canada"]) ("biteme@biteme.org") ((creation-date . "2009-08-23") (timestamp . "2010-01-30") (notes . "Real Estate Agent")) nil]
+["Wile" "Coyote" nil nil ("Acme Corp" "Umbrella Corp") (["Cell" 551 551 5551 0] ["Work" 662 662 6662 0] ["Fax" 443 443 4443 0]) (["Work" ("65 Funny Road") "Metropolis" "Kansas" "90210" "Canada"]) ("biteme@biteme.org") ((creation-date . "2009-08-23") (timestamp . "2010-01-30") (notes . "Real Estate Agent")) nil]

@@ -96,9 +96,33 @@ describe("ContactsStore", function() {
         });
     });
     
+    it('should delete a contact', function(){
+        copyFile('/home/dcr/node_projects/woe/spec/bbdb.test', bbdbFile);
+        //expect(fs.readFileSync(bbdbFile).toString()).toContain("Ricky");
+        // ricky's hash is known in advance 
+        var hash = "29fbf9cf1e016d37152f216bab01d924";
+        
+        runs(function(){
+            deleteDone = false;
+            store = new ContactsStore("/usr/local/bin/emacs", bbdbFile,
+                                      "/home/dcr/node_projects/woe/emacs-scripts/woe.el");
+            store.delete("Ricky", "Ricardo", hash, function(error) {
+                deleteDone = true;
+            });
+        });
+
+        waitsFor(function(){
+            return deleteDone;
+        }, "Fetch should be done", 1000);
+        
+        runs(function() {
+            expect(fs.readFileSync(bbdbFile).toString()).not.toContain("Ricky");
+        });
+    });
 });
 
 
 function copyFile(source, target) {
     fs.createReadStream(source).pipe(fs.createWriteStream(target));
 }
+
