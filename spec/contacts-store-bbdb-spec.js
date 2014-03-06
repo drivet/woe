@@ -113,10 +113,80 @@ describe("ContactsStore", function() {
 
         waitsFor(function(){
             return deleteDone;
-        }, "Fetch should be done", 1000);
+        }, "Delete should be done", 1000);
         
         runs(function() {
             expect(fs.readFileSync(bbdbFile).toString()).not.toContain("Ricky");
+        });
+    });
+    
+    it('should update a contacts email list', function(){
+        copyFile('/home/dcr/node_projects/woe/spec/bbdb.test', bbdbFile);
+        var hash = "29fbf9cf1e016d37152f216bab01d924";
+
+        var contactUpdateJson = {
+            "email": ["email1@email1.org", "email2@email2.org"]
+        };
+        
+        runs(function(){
+            updateDone = false;
+            store = new ContactsStore("/usr/local/bin/emacs", bbdbFile,
+                                      "/home/dcr/node_projects/woe/emacs-scripts/woe.el");
+            store.update("Ricky", "Ricardo", hash,  contactUpdateJson, function(error) {
+                updateDone = true;
+            });
+        });
+        
+        waitsFor(function(){
+            return updateDone;
+        }, "Update should be done", 1000);
+        
+        runs(function() {
+            expect(fs.readFileSync(bbdbFile).toString()).toContain("email1@email1.org");
+            expect(fs.readFileSync(bbdbFile).toString()).toContain("email2@email2.org");
+        });
+    });
+    
+    it('should update a contacts phone list', function(){
+        copyFile('/home/dcr/node_projects/woe/spec/bbdb.test', bbdbFile);
+        var hash = "29fbf9cf1e016d37152f216bab01d924";
+
+        var contactUpdateJson = {
+            "telephone": [{"label": "Home",
+                           "areaCode": "514",
+                           "prefix": "555",
+                           "suffix": "6666",
+                           "extension": "0"
+                          },
+                          {"label": "Cell",
+                           "areaCode": "438",
+                           "prefix": "444",
+                           "suffix": "7777",
+                           "extension": "0"
+                          }
+                         ]
+        };
+        
+        runs(function(){
+            updateDone = false;
+            store = new ContactsStore("/usr/local/bin/emacs", bbdbFile,
+                                      "/home/dcr/node_projects/woe/emacs-scripts/woe.el");
+            store.update("Ricky", "Ricardo", hash,  contactUpdateJson, function(error) {
+                updateDone = true;
+            });
+        });
+        
+        waitsFor(function(){
+            return updateDone;
+        }, "Update should be done", 1000);
+        
+        runs(function() {
+            expect(fs.readFileSync(bbdbFile).toString()).toContain("514");
+            expect(fs.readFileSync(bbdbFile).toString()).toContain("555");
+            expect(fs.readFileSync(bbdbFile).toString()).toContain("6666");
+            expect(fs.readFileSync(bbdbFile).toString()).toContain("438");
+            expect(fs.readFileSync(bbdbFile).toString()).toContain("444");
+            expect(fs.readFileSync(bbdbFile).toString()).toContain("7777");
         });
     });
 });

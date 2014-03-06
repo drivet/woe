@@ -51,7 +51,8 @@ ContactsStore.prototype.create = function(contact, callback){
     var setqBbdbFileForm = setq("bbdb-file", this.bbdbFile);
     var bbdbCreateForm = bbdbCreate(contact);
     var saveBuffersForm = [{name: 'save-some-buffers'}, {name: 't'}];
-    this.emacsBatcher.run([setqBbdbFileForm, bbdbCreateForm, saveBuffersForm], function(err,stdout,stderr){
+    this.emacsBatcher.run([setqBbdbFileForm, bbdbCreateForm, saveBuffersForm],
+                          function(err,stdout,stderr){
         if (err) {
             callback(err);
         } else {
@@ -63,8 +64,26 @@ ContactsStore.prototype.create = function(contact, callback){
 ContactsStore.prototype.delete = function(firstName, lastName, hash, callback){
     var setqBbdbFileForm = setq("bbdb-file", this.bbdbFile);
     var bbdbDelete = [{name: "woe-delete-record"}, firstName, lastName, hash];
-    this.emacsBatcher.run([setqBbdbFileForm, bbdbDelete], function(err,stdout,stderr){
+    this.emacsBatcher.run([setqBbdbFileForm, bbdbDelete],
+                          function(err,stdout,stderr){
         if (err){
+            callback(err);
+        } else {
+            callback(undefined);
+        }
+    });
+};
+
+ContactsStore.prototype.update = function(firstName, lastName, hash, contact, callback){
+    var setqBbdbFileForm = setq("bbdb-file", this.bbdbFile);
+
+    // weird that all this is necessary...
+    var contactJsonStr = JSON.stringify(contact);
+    contactJsonStr = JSON.stringify(contactJsonStr);
+    contactJsonStr = contactJsonStr.substring(1, contactJsonStr.length-1);
+    var bbdbUpdate = [{name: "woe-update-record-json"}, firstName, lastName, hash, contactJsonStr];
+    this.emacsBatcher.run([setqBbdbFileForm, bbdbUpdate], function(err,stdout,stderr){
+        if (err) {
             callback(err);
         } else {
             callback(undefined);
