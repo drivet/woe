@@ -1,3 +1,16 @@
+/**
+ Runs emacs in batch mode, given a list of lisp forms in "javascript" mode,
+ by spawning a new emacs process.
+ 
+ See this page: https://www.npmjs.org/package/sexpression
+
+ Basically something like this:
+ [{ name: 'a' }, { name: 'b' }, [1, 2], 'a']
+
+ turns into this:
+ (a b (1 2) "a")
+ */
+
 var child = require('child_process');
 var sexp = require('sexpression');
 

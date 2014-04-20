@@ -2,6 +2,10 @@ var spawn = require('child_process').spawn;
 var pathmod = require('path');
 var fs = require("fs");
 
+/**
+ Converts org files to HTML.
+ Not really in use yet.
+ **/
 
 FileNotFoundError = function(message){
     this.message = message;

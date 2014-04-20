@@ -1,3 +1,5 @@
+;; basic emacs lisp functions to support the BBDB CRUD interface for JavaScript.
+
 (require 'package)
 (package-initialize)
 (add-to-list 'package-archives '("elpa" . "http://tromey.com/elpa/"))

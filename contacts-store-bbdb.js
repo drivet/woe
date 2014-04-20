@@ -1,3 +1,13 @@
+/**
+ CRUD interface for an emacs BBDB file. Contacts are given and returned
+ in JSON form.
+
+ Contacts are identified with firtname and last name and a hash ID,
+ which is pulled out of the contact when fetch from the file.
+
+ Relies heavily on an emacs lisp initialization file to provide the basic
+ emacs interface.
+ */
 var EmacsBatcher = require('./emacs-batcher');
 
 var phoneVector = function(telephone){
